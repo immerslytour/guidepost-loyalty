@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guidepost Media — Acceso Restaurantes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #0A0812;
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(255,153,51,0.12) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(200,16,46,0.12) 0%, transparent 45%);
+    color: #F5E9DC;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,153,51,0.2);
+    border-radius: 18px;
+    padding: 36px 28px;
+    backdrop-filter: blur(12px);
+  }
+
+  .brand {
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #E8A020;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 28px;
+    font-weight: 700;
+  }
+
+  .tabs {
+    display: flex;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #9B8A7D;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: #FF9933;
+    color: #0A0812;
+  }
+
+  form { display: flex; flex-direction: column; gap: 14px; }
+
+  .field.hidden { display: none; }
+
+  label {
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: #E8A020;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,153,51,0.25);
+    border-radius: 10px;
+    color: #F5E9DC;
+    font-size: 15px;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #FF9933;
+    background: rgba(0,0,0,0.45);
+  }
+
+  input::placeholder { color: #6B5648; }
+
+  button {
+    margin-top: 8px;
+    padding: 16px;
+    background: linear-gradient(135deg, #FF9933, #E8A020);
+    color: #0A0812;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .msg {
+    font-size: 13px;
+    text-align: center;
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  .msg.error { color: #ff8a8a; }
+  .msg.success { color: #8fd99f; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="brand">Guidepost Media</div>
+  <h1>Portal de Restaurantes</h1>
+
+  <div class="tabs">
+    <div class="tab active" id="tabLogin">Iniciar sesión</div>
+    <div class="tab" id="tabSignup">Crear cuenta</div>
+  </div>
+
+  <form id="authForm">
+    <div class="field" id="fieldName">
+      <label for="businessName">Nombre del negocio</label>
+      <input type="text" id="businessName" placeholder="Ej. Lalo's Taqueria">
+    </div>
+    <div class="field" id="fieldSlug">
+      <label for="slug">URL de tu menú (sin espacios)</label>
+      <input type="text" id="slug" placeholder="ej. lalos-taqueria">
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="tu@correo.com" required>
+    </div>
+    <div class="field">
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
+    </div>
+    <button type="submit" id="submitBtn">Iniciar sesión</button>
+  </form>
+
+  <div id="msg" class="msg hidden"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  const SUPABASE_URL = "https://oxdgkfutsfjfveewnojm.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94ZGdrZnV0c2ZqZnZlZXdub2ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTM5MDgsImV4cCI6MjA5Njg2OTkwOH0.dE4wZxryr-4LLUPDXQMQhAFvcbbHLjbCyK88y5xhhXQ";
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const tabLogin = document.getElementById('tabLogin');
+  const tabSignup = document.getElementById('tabSignup');
+  const fieldName = document.getElementById('fieldName');
+  const fieldSlug = document.getElementById('fieldSlug');
+  const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('authForm');
+  const msg = document.getElementById('msg');
+
+  let mode = 'login';
+
+  function showMsg(text, type) {
+    msg.textContent = text;
+    msg.className = 'msg ' + type;
+    msg.classList.remove('hidden');
+  }
+
+  tabLogin.addEventListener('click', () => {
+    mode = 'login';
+    tabLogin.classList.add('active');
+    tabSignup.classList.remove('active');
+    fieldName.classList.add('hidden');
+    fieldSlug.classList.add('hidden');
+    submitBtn.textContent = 'Iniciar sesión';
+  });
+
+  tabSignup.addEventListener('click', () => {
+    mode = 'signup';
+    tabSignup.classList.add('active');
+    tabLogin.classList.remove('active');
+    fieldName.classList.remove('hidden');
+    fieldSlug.classList.remove('hidden');
+    submitBtn.textContent = 'Crear cuenta';
+  });
+
+  function slugify(text) {
+    return text.toString().toLowerCase().trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  }
+
+  document.getElementById('businessName').addEventListener('input', (e) => {
+    if (mode === 'signup') {
+      document.getElementById('slug').value = slugify(e.target.value);
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.classList.add('hidden');
+    submitBtn.disabled = true;
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (mode === 'signup') {
+      const businessName = document.getElementById('businessName').value.trim();
+      const slug = document.getElementById('slug').value.trim();
+
+      if (!businessName || !slug) {
+        showMsg('Completa nombre del negocio y URL.', 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      const { data, error } = await sb.auth.signUp({ email, password });
+
+      if (error) {
+        showMsg(error.message, 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // Crear registro de restaurante
+      const userId = data.user?.id;
+      if (userId) {
+        const { error: insertError } = await sb.from('restaurants').insert({
+          id: userId,
+          business_name: businessName,
+          slug: slug
+        });
+
+        if (insertError) {
+          showMsg('Cuenta creada, pero hubo un error guardando el negocio: ' + insertError.message, 'error');
+          submitBtn.disabled = false;
+          return;
+        }
+      }
+
+      if (data.session) {
+        window.location.href = 'dashboard.html';
+      } else {
+        showMsg('Cuenta creada. Revisa tu email para confirmar, luego inicia sesión.', 'success');
+        submitBtn.disabled = false;
+      }
+
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        showMsg(error.message, 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      window.location.href = 'dashboard.html';
+    }
+  });
+
+  // Si ya hay sesión activa, redirige al dashboard
+  sb.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      window.location.href = 'dashboard.html';
+    }
+  });
+</script>
+
+</body>
+</html>

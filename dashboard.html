@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Guidepost Media</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #0A0812;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(255,153,51,0.10) 0%, transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(200,16,46,0.10) 0%, transparent 40%);
+    color: #F5E9DC;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .brand { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: #E8A020; }
+  h1 { font-size: 26px; font-weight: 700; margin-top: 4px; }
+
+  .logout {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,153,51,0.2);
+    color: #F5E9DC;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  .qr-banner {
+    background: rgba(255,153,51,0.08);
+    border: 1px solid rgba(255,153,51,0.25);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .qr-banner .label { font-size: 12px; color: #E8A020; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+  .qr-banner .url { font-size: 14px; word-break: break-all; color: #F5E9DC; }
+  .qr-banner button {
+    background: #FF9933;
+    color: #0A0812;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,153,51,0.15);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+
+  .card h2 {
+    font-size: 16px;
+    margin-bottom: 16px;
+    color: #FF9933;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .menu-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 80px 32px;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+
+  @media (max-width: 560px) {
+    .menu-item { grid-template-columns: 1fr 1fr; }
+    .menu-item .del-col { grid-column: 2; justify-self: end; }
+  }
+
+  input, textarea, select {
+    width: 100%;
+    padding: 11px 13px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,153,51,0.2);
+    border-radius: 8px;
+    color: #F5E9DC;
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #FF9933;
+  }
+
+  input::placeholder, textarea::placeholder { color: #6B5648; }
+
+  .del-btn {
+    background: rgba(200,16,46,0.2);
+    border: 1px solid rgba(200,16,46,0.4);
+    color: #ff8a8a;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 32px;
+    height: 40px;
+  }
+
+  .add-btn, .save-btn, .send-btn {
+    background: linear-gradient(135deg, #FF9933, #E8A020);
+    color: #0A0812;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .add-btn { background: rgba(255,153,51,0.15); color: #FF9933; border: 1px solid rgba(255,153,51,0.3); }
+
+  .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+
+  textarea { min-height: 90px; resize: vertical; margin-bottom: 12px; }
+
+  .promo-history {
+    margin-top: 16px;
+    border-top: 1px solid rgba(255,153,51,0.1);
+    padding-top: 14px;
+  }
+
+  .promo-item {
+    font-size: 13px;
+    color: #C9B7A8;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .promo-item .date { color: #6B5648; font-size: 11px; display: block; margin-top: 2px; }
+
+  .stat {
+    font-size: 36px;
+    font-weight: 700;
+    color: #FF9933;
+  }
+
+  .stat-label { font-size: 13px; color: #C9B7A8; margin-top: 4px; }
+
+  .msg { font-size: 13px; margin-top: 12px; }
+  .msg.error { color: #ff8a8a; }
+  .msg.success { color: #8fd99f; }
+  .hidden { display: none; }
+
+  .loading { text-align: center; padding: 60px; color: #6B5648; }
+</style>
+</head>
+<body>
+
+<div id="loadingView" class="loading">Cargando...</div>
+
+<div id="dashView" class="wrap hidden">
+  <header>
+    <div>
+      <div class="brand">Guidepost Media</div>
+      <h1 id="businessNameTitle">Mi Restaurante</h1>
+    </div>
+    <button class="logout" id="logoutBtn">Cerrar sesión</button>
+  </header>
+
+  <div class="qr-banner">
+    <div>
+      <div class="label">Tu página pública (úsala para el QR)</div>
+      <div class="url" id="publicUrl">—</div>
+    </div>
+    <button id="copyUrlBtn">Copiar enlace</button>
+  </div>
+
+  <div class="card">
+    <h2>Menú</h2>
+    <div id="menuItems"></div>
+    <div class="actions">
+      <button class="add-btn" id="addItemBtn">+ Agregar platillo</button>
+      <button class="save-btn" id="saveMenuBtn">Guardar menú</button>
+    </div>
+    <div id="menuMsg" class="msg hidden"></div>
+  </div>
+
+  <div class="card">
+    <h2>Enviar promoción por SMS</h2>
+    <textarea id="promoText" placeholder="Ej: Hoy 2x1 en tacos al pastor de 2pm a 6pm 🌮"></textarea>
+    <div class="actions">
+      <button class="send-btn" id="sendPromoBtn">Enviar a mis suscriptores</button>
+    </div>
+    <div id="promoMsg" class="msg hidden"></div>
+
+    <div class="promo-history">
+      <h2 style="margin-top:0">Historial de promos</h2>
+      <div id="promoHistory"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stat" id="subscriberCount">0</div>
+    <div class="stat-label">Clientes suscritos a SMS</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  const SUPABASE_URL = "https://oxdgkfutsfjfveewnojm.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94ZGdrZnV0c2ZqZnZlZXdub2ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTM5MDgsImV4cCI6MjA5Njg2OTkwOH0.dE4wZxryr-4LLUPDXQMQhAFvcbbHLjbCyK88y5xhhXQ";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Cambia esto a la URL real donde subas qr.html en Netlify
+  const PUBLIC_BASE_URL = "https://TU-SITIO.netlify.app/qr.html";
+
+  let currentUser = null;
+  let restaurant = null;
+  let menuItems = [];
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      window.location.href = 'index.html';
+      return;
+    }
+    currentUser = session.user;
+
+    const { data: rest, error } = await sb.from('restaurants').select('*').eq('id', currentUser.id).single();
+    if (error || !rest) {
+      alert('No se encontró tu negocio. Contacta soporte.');
+      return;
+    }
+    restaurant = rest;
+
+    document.getElementById('businessNameTitle').textContent = restaurant.business_name;
+    document.getElementById('publicUrl').textContent = `${PUBLIC_BASE_URL}?r=${restaurant.slug}`;
+
+    await loadMenu();
+    await loadSubscriberCount();
+    await loadPromoHistory();
+
+    document.getElementById('loadingView').classList.add('hidden');
+    document.getElementById('dashView').classList.remove('hidden');
+  }
+
+  async function loadMenu() {
+    const { data, error } = await sb.from('menu_items').select('*').eq('restaurant_id', currentUser.id).order('sort_order');
+    menuItems = data || [];
+    renderMenu();
+  }
+
+  function renderMenu() {
+    const container = document.getElementById('menuItems');
+    container.innerHTML = '';
+    menuItems.forEach((item, idx) => {
+      const row = document.createElement('div');
+      row.className = 'menu-item';
+      row.innerHTML = `
+        <input type="text" placeholder="Nombre del platillo" value="${escapeHtml(item.name || '')}" data-field="name" data-idx="${idx}">
+        <input type="text" placeholder="Categoría" value="${escapeHtml(item.category || 'General')}" data-field="category" data-idx="${idx}">
+        <input type="number" placeholder="Precio" step="0.01" value="${item.price ?? ''}" data-field="price" data-idx="${idx}">
+        <button class="del-btn" data-idx="${idx}">×</button>
+      `;
+      container.appendChild(row);
+    });
+
+    container.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.dataset.idx);
+        const field = e.target.dataset.field;
+        menuItems[idx][field] = field === 'price' ? parseFloat(e.target.value) || null : e.target.value;
+      });
+    });
+
+    container.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.target.dataset.idx);
+        const item = menuItems[idx];
+        if (item.id) {
+          sb.from('menu_items').delete().eq('id', item.id).then(() => {});
+        }
+        menuItems.splice(idx, 1);
+        renderMenu();
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  document.getElementById('addItemBtn').addEventListener('click', () => {
+    menuItems.push({ name: '', category: 'General', price: null, sort_order: menuItems.length });
+    renderMenu();
+  });
+
+  document.getElementById('saveMenuBtn').addEventListener('click', async () => {
+    const msgEl = document.getElementById('menuMsg');
+    msgEl.classList.add('hidden');
+
+    const toInsert = menuItems.filter(i => !i.id && i.name && i.name.trim());
+    const toUpdate = menuItems.filter(i => i.id && i.name && i.name.trim());
+
+    let hasError = false;
+
+    if (toInsert.length > 0) {
+      const payload = toInsert.map((i, idx) => ({
+        restaurant_id: currentUser.id,
+        name: i.name,
+        category: i.category || 'General',
+        price: i.price,
+        sort_order: idx
+      }));
+      const { error } = await sb.from('menu_items').insert(payload);
+      if (error) hasError = true;
+    }
+
+    for (const item of toUpdate) {
+      const { error } = await sb.from('menu_items').update({
+        name: item.name,
+        category: item.category || 'General',
+        price: item.price
+      }).eq('id', item.id);
+      if (error) hasError = true;
+    }
+
+    msgEl.classList.remove('hidden');
+    if (hasError) {
+      msgEl.textContent = 'Hubo un error guardando algunos platillos.';
+      msgEl.className = 'msg error';
+    } else {
+      msgEl.textContent = 'Menú guardado ✓';
+      msgEl.className = 'msg success';
+      await loadMenu();
+    }
+  });
+
+  async function loadSubscriberCount() {
+    const { count } = await sb.from('subscribers').select('*', { count: 'exact', head: true }).eq('restaurant_id', currentUser.id);
+    document.getElementById('subscriberCount').textContent = count ?? 0;
+  }
+
+  async function loadPromoHistory() {
+    const { data } = await sb.from('promos').select('*').eq('restaurant_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
+    const container = document.getElementById('promoHistory');
+    container.innerHTML = '';
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="promo-item">Aún no has enviado promociones.</div>';
+      return;
+    }
+    data.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'promo-item';
+      const date = new Date(p.created_at).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' });
+      div.innerHTML = `${escapeHtml(p.message)}<span class="date">${date} · ${p.sent ? 'Enviado' : 'Pendiente'}</span>`;
+      container.appendChild(div);
+    });
+  }
+
+  document.getElementById('sendPromoBtn').addEventListener('click', async () => {
+    const msgEl = document.getElementById('promoMsg');
+    const text = document.getElementById('promoText').value.trim();
+    msgEl.classList.add('hidden');
+
+    if (!text) {
+      msgEl.textContent = 'Escribe un mensaje primero.';
+      msgEl.className = 'msg error';
+      msgEl.classList.remove('hidden');
+      return;
+    }
+
+    const { error } = await sb.from('promos').insert({
+      restaurant_id: currentUser.id,
+      message: text,
+      sent: false
+    });
+
+    msgEl.classList.remove('hidden');
+    if (error) {
+      msgEl.textContent = 'Error: ' + error.message;
+      msgEl.className = 'msg error';
+    } else {
+      msgEl.textContent = 'Promoción guardada y en cola para enviarse por SMS ✓';
+      msgEl.className = 'msg success';
+      document.getElementById('promoText').value = '';
+      await loadPromoHistory();
+    }
+  });
+
+  document.getElementById('copyUrlBtn').addEventListener('click', () => {
+    const url = document.getElementById('publicUrl').textContent;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('copyUrlBtn');
+      const original = btn.textContent;
+      btn.textContent = '¡Copiado!';
+      setTimeout(() => btn.textContent = original, 1500);
+    });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await sb.auth.signOut();
+    window.location.href = 'index.html';
+  });
+
+  init();
+</script>
+
+</body>
+</html>
