@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — Guidepost Media</title>
+<title>Guidepost Media — Acceso Restaurantes</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -11,424 +11,294 @@
     font-family: 'Helvetica Neue', Arial, sans-serif;
     background: #0A0812;
     background-image:
-      radial-gradient(circle at 15% 0%, rgba(255,153,51,0.10) 0%, transparent 40%),
-      radial-gradient(circle at 85% 100%, rgba(200,16,46,0.10) 0%, transparent 40%);
+      radial-gradient(circle at 15% 15%, rgba(255,153,51,0.12) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(200,16,46,0.12) 0%, transparent 45%);
     color: #F5E9DC;
     min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 24px;
   }
 
-  .wrap { max-width: 760px; margin: 0 auto; }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-    gap: 12px;
+  .card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,153,51,0.2);
+    border-radius: 18px;
+    padding: 36px 28px;
+    backdrop-filter: blur(12px);
   }
 
-  .brand { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: #E8A020; }
-  h1 { font-size: 26px; font-weight: 700; margin-top: 4px; }
+  .brand {
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #E8A020;
+    margin-bottom: 8px;
+    text-align: center;
+  }
 
-  .logout {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,153,51,0.2);
-    color: #F5E9DC;
-    padding: 10px 18px;
+  h1 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 28px;
+    font-weight: 700;
+  }
+
+  .tabs {
+    display: flex;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #9B8A7D;
+    transition: all 0.2s;
   }
 
-  .qr-banner {
-    background: rgba(255,153,51,0.08);
-    border: 1px solid rgba(255,153,51,0.25);
-    border-radius: 14px;
-    padding: 18px 20px;
-    margin-bottom: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .qr-banner .label { font-size: 12px; color: #E8A020; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
-  .qr-banner .url { font-size: 14px; word-break: break-all; color: #F5E9DC; }
-  .qr-banner button {
+  .tab.active {
     background: #FF9933;
     color: #0A0812;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 13px;
-    white-space: nowrap;
   }
 
-  .card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,153,51,0.15);
-    border-radius: 14px;
-    padding: 22px;
-    margin-bottom: 20px;
-  }
+  form { display: flex; flex-direction: column; gap: 14px; }
 
-  .card h2 {
-    font-size: 16px;
-    margin-bottom: 16px;
-    color: #FF9933;
-    text-transform: uppercase;
+  .field.hidden { display: none; }
+
+  label {
+    font-size: 12px;
     letter-spacing: 0.05em;
+    color: #E8A020;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
   }
 
-  .menu-item {
-    display: grid;
-    grid-template-columns: 2fr 1fr 80px 32px;
-    gap: 8px;
-    margin-bottom: 10px;
-    align-items: center;
-  }
-
-  @media (max-width: 560px) {
-    .menu-item { grid-template-columns: 1fr 1fr; }
-    .menu-item .del-col { grid-column: 2; justify-self: end; }
-  }
-
-  input, textarea, select {
+  input {
     width: 100%;
-    padding: 11px 13px;
+    padding: 14px 16px;
     background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,153,51,0.2);
-    border-radius: 8px;
+    border: 1px solid rgba(255,153,51,0.25);
+    border-radius: 10px;
     color: #F5E9DC;
-    font-size: 14px;
-    font-family: inherit;
+    font-size: 15px;
   }
 
-  input:focus, textarea:focus, select:focus {
+  input:focus {
     outline: none;
     border-color: #FF9933;
+    background: rgba(0,0,0,0.45);
   }
 
-  input::placeholder, textarea::placeholder { color: #6B5648; }
+  input::placeholder { color: #6B5648; }
 
-  .del-btn {
-    background: rgba(200,16,46,0.2);
-    border: 1px solid rgba(200,16,46,0.4);
-    color: #ff8a8a;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    width: 32px;
-    height: 40px;
-  }
-
-  .add-btn, .save-btn, .send-btn {
+  button {
+    margin-top: 8px;
+    padding: 16px;
     background: linear-gradient(135deg, #FF9933, #E8A020);
     color: #0A0812;
     border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
+    border-radius: 10px;
+    font-size: 15px;
     font-weight: 700;
-    cursor: pointer;
-    font-size: 13px;
-    text-transform: uppercase;
     letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
   }
 
-  .add-btn { background: rgba(255,153,51,0.15); color: #FF9933; border: 1px solid rgba(255,153,51,0.3); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-
-  textarea { min-height: 90px; resize: vertical; margin-bottom: 12px; }
-
-  .promo-history {
-    margin-top: 16px;
-    border-top: 1px solid rgba(255,153,51,0.1);
-    padding-top: 14px;
-  }
-
-  .promo-item {
+  .msg {
     font-size: 13px;
-    color: #C9B7A8;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    text-align: center;
+    margin-top: 14px;
+    line-height: 1.5;
   }
 
-  .promo-item .date { color: #6B5648; font-size: 11px; display: block; margin-top: 2px; }
-
-  .stat {
-    font-size: 36px;
-    font-weight: 700;
-    color: #FF9933;
-  }
-
-  .stat-label { font-size: 13px; color: #C9B7A8; margin-top: 4px; }
-
-  .msg { font-size: 13px; margin-top: 12px; }
   .msg.error { color: #ff8a8a; }
   .msg.success { color: #8fd99f; }
   .hidden { display: none; }
-
-  .loading { text-align: center; padding: 60px; color: #6B5648; }
 </style>
 </head>
 <body>
 
-<div id="loadingView" class="loading">Cargando...</div>
+<div class="card">
+  <div class="brand">Guidepost Media</div>
+  <h1>Portal de Restaurantes</h1>
 
-<div id="dashView" class="wrap hidden">
-  <header>
-    <div>
-      <div class="brand">Guidepost Media</div>
-      <h1 id="businessNameTitle">Mi Restaurante</h1>
-    </div>
-    <button class="logout" id="logoutBtn">Cerrar sesión</button>
-  </header>
-
-  <div class="qr-banner">
-    <div>
-      <div class="label">Tu página pública (úsala para el QR)</div>
-      <div class="url" id="publicUrl">—</div>
-    </div>
-    <button id="copyUrlBtn">Copiar enlace</button>
+  <div class="tabs">
+    <div class="tab active" id="tabLogin">Iniciar sesión</div>
+    <div class="tab" id="tabSignup">Crear cuenta</div>
   </div>
 
-  <div class="card">
-    <h2>Menú</h2>
-    <div id="menuItems"></div>
-    <div class="actions">
-      <button class="add-btn" id="addItemBtn">+ Agregar platillo</button>
-      <button class="save-btn" id="saveMenuBtn">Guardar menú</button>
+  <form id="authForm">
+    <div class="field" id="fieldName">
+      <label for="businessName">Nombre del negocio</label>
+      <input type="text" id="businessName" placeholder="Ej. Lalo's Taqueria">
     </div>
-    <div id="menuMsg" class="msg hidden"></div>
-  </div>
-
-  <div class="card">
-    <h2>Enviar promoción por SMS</h2>
-    <textarea id="promoText" placeholder="Ej: Hoy 2x1 en tacos al pastor de 2pm a 6pm 🌮"></textarea>
-    <div class="actions">
-      <button class="send-btn" id="sendPromoBtn">Enviar a mis suscriptores</button>
+    <div class="field" id="fieldSlug">
+      <label for="slug">URL de tu menú (sin espacios)</label>
+      <input type="text" id="slug" placeholder="ej. lalos-taqueria">
     </div>
-    <div id="promoMsg" class="msg hidden"></div>
-
-    <div class="promo-history">
-      <h2 style="margin-top:0">Historial de promos</h2>
-      <div id="promoHistory"></div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="tu@correo.com" required>
     </div>
-  </div>
+    <div class="field">
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
+    </div>
+    <button type="submit" id="submitBtn">Iniciar sesión</button>
+  </form>
 
-  <div class="card">
-    <div class="stat" id="subscriberCount">0</div>
-    <div class="stat-label">Clientes suscritos a SMS</div>
-  </div>
+  <div id="msg" class="msg hidden"></div>
 </div>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = "https://oxdgkfutsfjfveewnojm.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94ZGdrZnV0c2ZqZnZlZXdub2ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTM5MDgsImV4cCI6MjA5Njg2OTkwOH0.dE4wZxryr-4LLUPDXQMQhAFvcbbHLjbCyK88y5xhhXQ";
+
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Cambia esto a la URL real donde subas qr.html en Netlify
-  const PUBLIC_BASE_URL = "https://guidepost.netlify.app/qr.html";
+  const tabLogin = document.getElementById('tabLogin');
+  const tabSignup = document.getElementById('tabSignup');
+  const fieldName = document.getElementById('fieldName');
+  const fieldSlug = document.getElementById('fieldSlug');
+  const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('authForm');
+  const msg = document.getElementById('msg');
 
-  let currentUser = null;
-  let restaurant = null;
-  let menuItems = [];
+  let mode = 'login';
 
-  async function init() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) {
-      window.location.href = 'index.html';
-      return;
-    }
-    currentUser = session.user;
-
-    const { data: rest, error } = await sb.from('restaurants').select('*').eq('id', currentUser.id).single();
-    if (error || !rest) {
-      alert('No se encontró tu negocio. Contacta soporte.');
-      return;
-    }
-    restaurant = rest;
-
-    document.getElementById('businessNameTitle').textContent = restaurant.business_name;
-    document.getElementById('publicUrl').textContent = `${PUBLIC_BASE_URL}?r=${restaurant.slug}`;
-
-    await loadMenu();
-    await loadSubscriberCount();
-    await loadPromoHistory();
-
-    document.getElementById('loadingView').classList.add('hidden');
-    document.getElementById('dashView').classList.remove('hidden');
+  function showMsg(text, type) {
+    msg.textContent = text;
+    msg.className = 'msg ' + type;
+    msg.classList.remove('hidden');
   }
 
-  async function loadMenu() {
-    const { data, error } = await sb.from('menu_items').select('*').eq('restaurant_id', currentUser.id).order('sort_order');
-    menuItems = data || [];
-    renderMenu();
+  tabLogin.addEventListener('click', () => {
+    mode = 'login';
+    tabLogin.classList.add('active');
+    tabSignup.classList.remove('active');
+    fieldName.classList.add('hidden');
+    fieldSlug.classList.add('hidden');
+    submitBtn.textContent = 'Iniciar sesión';
+  });
+
+  tabSignup.addEventListener('click', () => {
+    mode = 'signup';
+    tabSignup.classList.add('active');
+    tabLogin.classList.remove('active');
+    fieldName.classList.remove('hidden');
+    fieldSlug.classList.remove('hidden');
+    submitBtn.textContent = 'Crear cuenta';
+  });
+
+  function slugify(text) {
+    return text.toString().toLowerCase().trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
   }
 
-  function renderMenu() {
-    const container = document.getElementById('menuItems');
-    container.innerHTML = '';
-    menuItems.forEach((item, idx) => {
-      const row = document.createElement('div');
-      row.className = 'menu-item';
-      row.innerHTML = `
-        <input type="text" placeholder="Nombre del platillo" value="${escapeHtml(item.name || '')}" data-field="name" data-idx="${idx}">
-        <input type="text" placeholder="Categoría" value="${escapeHtml(item.category || 'General')}" data-field="category" data-idx="${idx}">
-        <input type="number" placeholder="Precio" step="0.01" value="${item.price ?? ''}" data-field="price" data-idx="${idx}">
-        <button class="del-btn" data-idx="${idx}">×</button>
-      `;
-      container.appendChild(row);
-    });
+  document.getElementById('businessName').addEventListener('input', (e) => {
+    if (mode === 'signup') {
+      document.getElementById('slug').value = slugify(e.target.value);
+    }
+  });
 
-    container.querySelectorAll('input').forEach(inp => {
-      inp.addEventListener('input', (e) => {
-        const idx = parseInt(e.target.dataset.idx);
-        const field = e.target.dataset.field;
-        menuItems[idx][field] = field === 'price' ? parseFloat(e.target.value) || null : e.target.value;
-      });
-    });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.classList.add('hidden');
+    submitBtn.disabled = true;
 
-    container.querySelectorAll('.del-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const idx = parseInt(e.target.dataset.idx);
-        const item = menuItems[idx];
-        if (item.id) {
-          sb.from('menu_items').delete().eq('id', item.id).then(() => {});
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (mode === 'signup') {
+      const businessName = document.getElementById('businessName').value.trim();
+      const slug = document.getElementById('slug').value.trim();
+
+      if (!businessName || !slug) {
+        showMsg('Completa nombre del negocio y URL.', 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      let { data, error } = await sb.auth.signUp({ email, password });
+
+      if (error) {
+        showMsg(error.message, 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // Si no hay sesión activa tras el signUp, forzar login inmediato
+      if (!data.session) {
+        const loginResult = await sb.auth.signInWithPassword({ email, password });
+        if (loginResult.error) {
+          showMsg('Cuenta creada. Revisa tu email para confirmar, luego inicia sesión.', 'success');
+          submitBtn.disabled = false;
+          return;
         }
-        menuItems.splice(idx, 1);
-        renderMenu();
-      });
-    });
-  }
+        data = loginResult.data;
+      }
 
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
+      // Crear registro de restaurante
+      const userId = data.user?.id;
+      if (userId) {
+        const { error: insertError } = await sb.from('restaurants').insert({
+          id: userId,
+          business_name: businessName,
+          slug: slug
+        });
 
-  document.getElementById('addItemBtn').addEventListener('click', () => {
-    menuItems.push({ name: '', category: 'General', price: null, sort_order: menuItems.length });
-    renderMenu();
-  });
+        if (insertError) {
+          showMsg('Cuenta creada, pero hubo un error guardando el negocio: ' + insertError.message, 'error');
+          submitBtn.disabled = false;
+          return;
+        }
+      }
 
-  document.getElementById('saveMenuBtn').addEventListener('click', async () => {
-    const msgEl = document.getElementById('menuMsg');
-    msgEl.classList.add('hidden');
+      if (data.session) {
+        window.location.href = 'dashboard.html';
+      } else {
+        showMsg('Cuenta creada. Revisa tu email para confirmar, luego inicia sesión.', 'success');
+        submitBtn.disabled = false;
+      }
 
-    const toInsert = menuItems.filter(i => !i.id && i.name && i.name.trim());
-    const toUpdate = menuItems.filter(i => i.id && i.name && i.name.trim());
-
-    let hasError = false;
-
-    if (toInsert.length > 0) {
-      const payload = toInsert.map((i, idx) => ({
-        restaurant_id: currentUser.id,
-        name: i.name,
-        category: i.category || 'General',
-        price: i.price,
-        sort_order: idx
-      }));
-      const { error } = await sb.from('menu_items').insert(payload);
-      if (error) hasError = true;
-    }
-
-    for (const item of toUpdate) {
-      const { error } = await sb.from('menu_items').update({
-        name: item.name,
-        category: item.category || 'General',
-        price: item.price
-      }).eq('id', item.id);
-      if (error) hasError = true;
-    }
-
-    msgEl.classList.remove('hidden');
-    if (hasError) {
-      msgEl.textContent = 'Hubo un error guardando algunos platillos.';
-      msgEl.className = 'msg error';
     } else {
-      msgEl.textContent = 'Menú guardado ✓';
-      msgEl.className = 'msg success';
-      await loadMenu();
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        showMsg(error.message, 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      window.location.href = 'dashboard.html';
     }
   });
 
-  async function loadSubscriberCount() {
-    const { count } = await sb.from('subscribers').select('*', { count: 'exact', head: true }).eq('restaurant_id', currentUser.id);
-    document.getElementById('subscriberCount').textContent = count ?? 0;
-  }
-
-  async function loadPromoHistory() {
-    const { data } = await sb.from('promos').select('*').eq('restaurant_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
-    const container = document.getElementById('promoHistory');
-    container.innerHTML = '';
-    if (!data || data.length === 0) {
-      container.innerHTML = '<div class="promo-item">Aún no has enviado promociones.</div>';
-      return;
-    }
-    data.forEach(p => {
-      const div = document.createElement('div');
-      div.className = 'promo-item';
-      const date = new Date(p.created_at).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' });
-      div.innerHTML = `${escapeHtml(p.message)}<span class="date">${date} · ${p.sent ? 'Enviado' : 'Pendiente'}</span>`;
-      container.appendChild(div);
-    });
-  }
-
-  document.getElementById('sendPromoBtn').addEventListener('click', async () => {
-    const msgEl = document.getElementById('promoMsg');
-    const text = document.getElementById('promoText').value.trim();
-    msgEl.classList.add('hidden');
-
-    if (!text) {
-      msgEl.textContent = 'Escribe un mensaje primero.';
-      msgEl.className = 'msg error';
-      msgEl.classList.remove('hidden');
-      return;
-    }
-
-    const { error } = await sb.from('promos').insert({
-      restaurant_id: currentUser.id,
-      message: text,
-      sent: false
-    });
-
-    msgEl.classList.remove('hidden');
-    if (error) {
-      msgEl.textContent = 'Error: ' + error.message;
-      msgEl.className = 'msg error';
-    } else {
-      msgEl.textContent = 'Promoción guardada y en cola para enviarse por SMS ✓';
-      msgEl.className = 'msg success';
-      document.getElementById('promoText').value = '';
-      await loadPromoHistory();
+  // Si ya hay sesión activa, redirige al dashboard
+  sb.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      window.location.href = 'dashboard.html';
     }
   });
-
-  document.getElementById('copyUrlBtn').addEventListener('click', () => {
-    const url = document.getElementById('publicUrl').textContent;
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = document.getElementById('copyUrlBtn');
-      const original = btn.textContent;
-      btn.textContent = '¡Copiado!';
-      setTimeout(() => btn.textContent = original, 1500);
-    });
-  });
-
-  document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await sb.auth.signOut();
-    window.location.href = 'index.html';
-  });
-
-  init();
 </script>
 
 </body>
+</html>
