@@ -237,12 +237,23 @@
         return;
       }
 
-      const { data, error } = await sb.auth.signUp({ email, password });
+      let { data, error } = await sb.auth.signUp({ email, password });
 
       if (error) {
         showMsg(error.message, 'error');
         submitBtn.disabled = false;
         return;
+      }
+
+      // Si no hay sesión activa tras el signUp, forzar login inmediato
+      if (!data.session) {
+        const loginResult = await sb.auth.signInWithPassword({ email, password });
+        if (loginResult.error) {
+          showMsg('Cuenta creada. Revisa tu email para confirmar, luego inicia sesión.', 'success');
+          submitBtn.disabled = false;
+          return;
+        }
+        data = loginResult.data;
       }
 
       // Crear registro de restaurante
@@ -291,3 +302,4 @@
 
 </body>
 </html>
+
