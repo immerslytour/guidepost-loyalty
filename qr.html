@@ -282,6 +282,21 @@
       phone: phone
     });
 
+    // Mandamos SMS de bienvenida vía Edge Function (no bloquea la navegación si falla)
+    fetch(`${SUPABASE_URL}/functions/v1/send-sms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
+        type: 'welcome',
+        restaurant_id: restaurant.id,
+        phone: phone,
+        business_name: restaurant.business_name
+      })
+    }).catch(() => {});
+
     // Ignorar error de duplicado (ya suscrito antes)
     localStorage.setItem('gp_phone_' + restaurant.slug, phone);
     showMenu();
